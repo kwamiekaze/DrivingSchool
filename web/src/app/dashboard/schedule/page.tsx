@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
 import { Calendar, Clock, MapPin, User, Car, ChevronLeft, ChevronRight } from 'lucide-react'
+import { trpc } from '@/lib/trpc'
 
 const mockLessons = [
   {
@@ -55,6 +56,10 @@ const mockLessons = [
 export default function SchedulePage() {
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [selectedLesson, setSelectedLesson] = useState<string | null>(null)
+  
+  const { data: lessons = mockLessons, isLoading } = trpc.lessons.getByDate.useQuery({
+    date: selectedDate.toISOString().split('T')[0],
+  })
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('en-US', { 
@@ -151,7 +156,16 @@ export default function SchedulePage() {
         </div>
 
         <div className="grid gap-4">
-          {mockLessons.map((lesson) => (
+          {isLoading ? (
+            <div className="text-center py-8">
+              <div className="text-gray-500">Loading lessons...</div>
+            </div>
+          ) : lessons.length === 0 ? (
+            <div className="text-center py-8">
+              <div className="text-gray-500">No lessons scheduled for this date</div>
+            </div>
+          ) : (
+            lessons.map((lesson) => (
             <Card 
               key={lesson.id} 
               className={`cursor-pointer transition-all hover:shadow-md ${
@@ -165,20 +179,44 @@ export default function SchedulePage() {
                     <div className="flex flex-col">
                       <div className="flex items-center space-x-2">
                         <Clock className="h-4 w-4 text-gray-500" />
-                        <span className="font-semibold">{lesson.startTime} - {lesson.endTime}</span>
+                        <span className="font-semibold">
+                          {typeof lesson.startTime === 'string' 
+                            ? lesson.startTime 
+                            : new Date(lesson.startTime).toLocaleTimeString('en-US', { 
+                                hour: 'numeric', 
+                                minute: '2-digit',
+                                hour12: true 
+                              })
+                          } - {typeof lesson.endTime === 'string' 
+                            ? lesson.endTime 
+                            : new Date(lesson.endTime).toLocaleTimeString('en-US', { 
+                                hour: 'numeric', 
+                                minute: '2-digit',
+                                hour12: true 
+                              })
+                          }
+                        </span>
                       </div>
                       <div className="flex items-center space-x-2 mt-1">
                         <User className="h-4 w-4 text-gray-500" />
-                        <span className="text-sm text-gray-600">{lesson.studentName}</span>
+                        <span className="text-sm text-gray-600">
+                          {'studentName' in lesson 
+                            ? lesson.studentName 
+                            : `${lesson.student?.firstName} ${lesson.student?.lastName}`
+                          }
+                        </span>
                       </div>
                     </div>
                     
                     <div className="flex flex-col">
                       <Badge variant="secondary" className="mb-1">
-                        {lesson.packageType}
+                        {'packageType' in lesson 
+                          ? lesson.packageType 
+                          : lesson.package?.name || 'Unknown Package'
+                        }
                       </Badge>
-                      <Badge className={getZoneColor(lesson.zone)}>
-                        {lesson.zone}
+                      <Badge className={getZoneColor('zone' in lesson ? lesson.zone : lesson.zone?.name || 'Unknown')}>
+                        {'zone' in lesson ? lesson.zone : lesson.zone?.name || 'Unknown'}
                       </Badge>
                     </div>
                   </div>
@@ -187,9 +225,23 @@ export default function SchedulePage() {
                     <div className="text-right">
                       <div className="flex items-center space-x-1 text-sm text-gray-600">
                         <Car className="h-4 w-4" />
-                        <span>{lesson.instructor}</span>
+                        <span>
+                          {'instructor' in lesson && typeof lesson.instructor === 'string'
+                            ? lesson.instructor 
+                            : lesson.instructor && typeof lesson.instructor === 'object'
+                              ? `${lesson.instructor.firstName} ${lesson.instructor.lastName}`
+                              : 'Unknown Instructor'
+                          }
+                        </span>
                       </div>
-                      <div className="text-xs text-gray-500">{lesson.vehicle}</div>
+                      <div className="text-xs text-gray-500">
+                        {'vehicle' in lesson && typeof lesson.vehicle === 'string'
+                          ? lesson.vehicle 
+                          : lesson.vehicle && typeof lesson.vehicle === 'object'
+                            ? `${lesson.vehicle.make} ${lesson.vehicle.model} (${lesson.vehicle.licensePlate})`
+                            : 'Unknown Vehicle'
+                        }
+                      </div>
                     </div>
                     
                     <Badge className={getStatusColor(lesson.status)}>
@@ -207,11 +259,25 @@ export default function SchedulePage() {
                     <div className="grid md:grid-cols-2 gap-4">
                       <div>
                         <p className="text-sm font-semibold text-gray-700">Pickup Address</p>
-                        <p className="text-sm text-gray-600">{lesson.pickupAddress}</p>
+                        <p className="text-sm text-gray-600">
+                          {'pickupAddress' in lesson && typeof lesson.pickupAddress === 'string'
+                            ? lesson.pickupAddress 
+                            : lesson.pickupAddress && typeof lesson.pickupAddress === 'object'
+                              ? `${lesson.pickupAddress.street}, ${lesson.pickupAddress.city}, ${lesson.pickupAddress.state}`
+                              : 'No pickup address'
+                          }
+                        </p>
                       </div>
                       <div>
                         <p className="text-sm font-semibold text-gray-700">Dropoff Address</p>
-                        <p className="text-sm text-gray-600">{lesson.dropoffAddress}</p>
+                        <p className="text-sm text-gray-600">
+                          {'dropoffAddress' in lesson && typeof lesson.dropoffAddress === 'string'
+                            ? lesson.dropoffAddress 
+                            : lesson.dropoffAddress && typeof lesson.dropoffAddress === 'object'
+                              ? `${lesson.dropoffAddress.street}, ${lesson.dropoffAddress.city}, ${lesson.dropoffAddress.state}`
+                              : 'No dropoff address'
+                          }
+                        </p>
                       </div>
                     </div>
                     <div className="flex space-x-2 mt-4">
@@ -232,7 +298,8 @@ export default function SchedulePage() {
                 )}
               </CardContent>
             </Card>
-          ))}
+            ))
+          )}
         </div>
 
         <div className="mt-8 p-6 bg-[#0E7C86]/5 rounded-lg">
