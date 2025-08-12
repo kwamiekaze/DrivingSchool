@@ -44,14 +44,14 @@ export default function EnrollmentSuccessPage() {
 
           <Card className="mb-8">
             <CardHeader>
-              <CardTitle className="text-[#0E7C86]">What's Next?</CardTitle>
+              <CardTitle className="text-[#0E7C86]">What&apos;s Next?</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-left">
               <div className="flex items-start space-x-3">
                 <div className="w-6 h-6 bg-[#0E7C86] text-white rounded-full flex items-center justify-center text-sm font-bold">1</div>
                 <div>
                   <p className="font-semibold">Check Your Email</p>
-                  <p className="text-gray-600">You'll receive a confirmation email with your enrollment details and next steps.</p>
+                  <p className="text-gray-600">You&apos;ll receive a confirmation email with your enrollment details and next steps.</p>
                 </div>
               </div>
               

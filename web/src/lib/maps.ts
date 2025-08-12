@@ -61,8 +61,8 @@ export async function calculateDistanceMatrix(
   destinations: string[]
 ) {
   if (!GOOGLE_MAPS_API_KEY) {
-    return origins.map((_, originIndex) =>
-      destinations.map((_, destIndex) => ({
+    return origins.map(() =>
+      destinations.map(() => ({
         distance: { text: '5.2 mi', value: 8369 },
         duration: { text: '12 mins', value: 720 + Math.random() * 600 },
         status: 'OK',
@@ -88,7 +88,11 @@ export async function calculateDistanceMatrix(
   }
 }
 
-export function optimizeRoute(lessons: any[]) {
+export function optimizeRoute(lessons: Array<{
+  zone: string
+  startTime: string | Date
+  etaMinutes?: number
+}>) {
   const sortedLessons = [...lessons].sort((a, b) => {
     if (a.zone !== b.zone) {
       return a.zone.localeCompare(b.zone)

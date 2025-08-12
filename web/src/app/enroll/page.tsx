@@ -178,7 +178,7 @@ export default function EnrollPage() {
                 </Label>
               </div>
               <p className="text-sm text-gray-600 mt-2">
-                We'll pick you up and drop you off at your preferred location for each lesson.
+                We&apos;ll pick you up and drop you off at your preferred location for each lesson.
               </p>
             </CardContent>
           </Card>

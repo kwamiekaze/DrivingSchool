@@ -104,7 +104,7 @@ export default function InstructorMobilePage() {
 
       <main className="container mx-auto px-4 py-6 max-w-md">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-[#0F172A] mb-2">Today's Route</h1>
+          <h1 className="text-2xl font-bold text-[#0F172A] mb-2">Today&apos;s Route</h1>
           <p className="text-gray-600">{mockInstructor.vehicle}</p>
         </div>
 

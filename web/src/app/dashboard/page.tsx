@@ -130,7 +130,7 @@ export default function DashboardPage() {
         <div className="grid md:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-[#0E7C86]">Today's Schedule</CardTitle>
+              <CardTitle className="text-[#0E7C86]">Today&apos;s Schedule</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">

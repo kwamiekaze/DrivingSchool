@@ -4,7 +4,7 @@ import React from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
-import { Users, Car, MapPin, Package, Settings, BarChart3, FileText, MessageSquare, DollarSign, Shield } from 'lucide-react'
+import { Users, Car, MapPin, Package, Settings, BarChart3, MessageSquare, DollarSign, Shield } from 'lucide-react'
 
 export default function AdminPage() {
   const mockStats = {

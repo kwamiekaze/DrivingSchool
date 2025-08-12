@@ -18,7 +18,12 @@ export const createCheckoutSession = async ({
   packageName: string
   packagePrice: number
   addPickupDropoff: boolean
-  studentData: any
+  studentData: {
+    studentId?: string
+    studentEmail: string
+    preferredTimes?: string
+    specialRequests?: string
+  }
   organizationId: string
 }) => {
   if (isTestMode) {

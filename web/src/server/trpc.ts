@@ -1,12 +1,12 @@
 import { initTRPC, TRPCError } from '@trpc/server'
-import { type CreateNextContextOptions } from '@trpc/server/adapters/next'
+import { type FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch'
 import { getAuth } from '@clerk/nextjs/server'
 import { db } from '@/lib/db'
 import superjson from 'superjson'
 import { ZodError } from 'zod'
 
 interface CreateContextOptions {
-  session: any
+  session: { userId?: string; orgId?: string } | null
   organizationId: string | null
 }
 
@@ -18,16 +18,25 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
   }
 }
 
-export const createTRPCContext = async (opts: CreateNextContextOptions) => {
+export const createTRPCContext = async (opts: FetchCreateContextFnOptions) => {
   const { req } = opts
-  const session = getAuth(req)
   
-  const organizationId = session.orgId || null
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const auth = getAuth(req as any)
+    const organizationId = auth.orgId || null
+    const session = auth.userId ? { userId: auth.userId, orgId: auth.orgId } : null
 
-  return createInnerTRPCContext({
-    session,
-    organizationId,
-  })
+    return createInnerTRPCContext({
+      session,
+      organizationId,
+    })
+  } catch {
+    return createInnerTRPCContext({
+      session: null,
+      organizationId: null,
+    })
+  }
 }
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
