@@ -1,0 +1,438 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  domain    String   @unique
+  timezone  String   @default("America/New_York")
+  address   String?
+  phone     String?
+  email     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users         User[]
+  students      Student[]
+  instructors   Instructor[]
+  vehicles      Vehicle[]
+  zones         Zone[]
+  packages      Package[]
+  orders        Order[]
+  invoices      Invoice[]
+  lessons       Lesson[]
+  messages      Message[]
+  addresses     Address[]
+  webhookEvents WebhookEvent[]
+  auditLogs     AuditLog[]
+  policies      Policy[]
+  progressEntries ProgressEntry[]
+
+  @@map("organizations")
+}
+
+model User {
+  id             String   @id @default(cuid())
+  organizationId String
+  clerkId        String   @unique
+  email          String
+  firstName      String
+  lastName       String
+  role           UserRole
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  auditLogs    AuditLog[]
+
+  @@map("users")
+}
+
+model Student {
+  id             String   @id @default(cuid())
+  organizationId String
+  email          String
+  firstName      String
+  lastName       String
+  phone          String?
+  dateOfBirth    DateTime?
+  parentEmail    String?
+  parentPhone    String?
+  pickupAddressId String?
+  dropoffAddressId String?
+  preferredTimes Json?
+  consentSigned  Boolean  @default(false)
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  pickupAddress   Address?     @relation("StudentPickupAddress", fields: [pickupAddressId], references: [id])
+  dropoffAddress  Address?     @relation("StudentDropoffAddress", fields: [dropoffAddressId], references: [id])
+  orders          Order[]
+  lessons         Lesson[]
+  progressEntries ProgressEntry[]
+  messages        Message[]
+
+  @@map("students")
+}
+
+model Instructor {
+  id             String   @id @default(cuid())
+  organizationId String
+  email          String
+  firstName      String
+  lastName       String
+  phone          String
+  licenseNumber  String
+  certifications Json?
+  homeZoneId     String?
+  workHours      Json?
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  homeZone     Zone?        @relation(fields: [homeZoneId], references: [id])
+  lessons      Lesson[]
+
+  @@map("instructors")
+}
+
+model Vehicle {
+  id             String      @id @default(cuid())
+  organizationId String
+  make           String
+  model          String
+  year           Int
+  licensePlate   String
+  vin            String?
+  homeZoneId     String?
+  vehicleType    VehicleType @default(SEDAN)
+  isActive       Boolean     @default(true)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  homeZone     Zone?        @relation(fields: [homeZoneId], references: [id])
+  lessons      Lesson[]
+
+  @@map("vehicles")
+}
+
+model Zone {
+  id             String   @id @default(cuid())
+  organizationId String
+  name           String
+  description    String?
+  polygonGeoJson Json
+  color          String   @default("#0E7C86")
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  instructors  Instructor[]
+  vehicles     Vehicle[]
+  addresses    Address[]
+
+  @@map("zones")
+}
+
+model Package {
+  id             String      @id @default(cuid())
+  organizationId String
+  name           String
+  description    String?
+  hours          Int
+  price          Int
+  packageType    PackageType @default(DRIVING)
+  isActive       Boolean     @default(true)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  orders       Order[]
+
+  @@map("packages")
+}
+
+model Order {
+  id             String      @id @default(cuid())
+  organizationId String
+  studentId      String
+  packageId      String
+  stripeSessionId String?
+  stripePaymentIntentId String?
+  amount         Int
+  status         OrderStatus @default(PENDING)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  student      Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  package      Package      @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  invoices     Invoice[]
+  lessons      Lesson[]
+
+  @@map("orders")
+}
+
+model Invoice {
+  id             String        @id @default(cuid())
+  organizationId String
+  orderId        String
+  amount         Int
+  description    String
+  status         InvoiceStatus @default(PENDING)
+  dueDate        DateTime?
+  paidAt         DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  order        Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("invoices")
+}
+
+model Lesson {
+  id               String       @id @default(cuid())
+  organizationId   String
+  orderId          String
+  studentId        String
+  instructorId     String?
+  vehicleId        String?
+  type             LessonType   @default(DRIVING)
+  startTime        DateTime
+  endTime          DateTime
+  pickupAddressId  String?
+  dropoffAddressId String?
+  status           LessonStatus @default(SCHEDULED)
+  etaMinutes       Int?
+  routeIndex       Int?
+  notes            String?
+  skillsAssessed   Json?
+  noShowReason     String?
+  noShowPhoto      String?
+  mileage          Float?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  organization     Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  order            Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  student          Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  instructor       Instructor?  @relation(fields: [instructorId], references: [id])
+  vehicle          Vehicle?     @relation(fields: [vehicleId], references: [id])
+  pickupAddress    Address?     @relation("LessonPickupAddress", fields: [pickupAddressId], references: [id])
+  dropoffAddress   Address?     @relation("LessonDropoffAddress", fields: [dropoffAddressId], references: [id])
+  progressEntries  ProgressEntry[]
+  messages         Message[]
+
+  @@map("lessons")
+}
+
+model Address {
+  id             String  @id @default(cuid())
+  organizationId String
+  street         String
+  city           String
+  state          String
+  zipCode        String
+  country        String  @default("US")
+  lat            Float?
+  lng            Float?
+  placeId        String?
+  zoneId         String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization           Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  zone                   Zone?        @relation(fields: [zoneId], references: [id])
+  studentPickups         Student[]    @relation("StudentPickupAddress")
+  studentDropoffs        Student[]    @relation("StudentDropoffAddress")
+  lessonPickups          Lesson[]     @relation("LessonPickupAddress")
+  lessonDropoffs         Lesson[]     @relation("LessonDropoffAddress")
+
+  @@map("addresses")
+}
+
+model Message {
+  id             String      @id @default(cuid())
+  organizationId String
+  studentId      String?
+  lessonId       String?
+  type           MessageType
+  channel        MessageChannel
+  recipient      String
+  subject        String?
+  content        String
+  templateId     String?
+  variables      Json?
+  status         MessageStatus @default(PENDING)
+  sentAt         DateTime?
+  deliveredAt    DateTime?
+  errorMessage   String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  student      Student?     @relation(fields: [studentId], references: [id])
+  lesson       Lesson?      @relation(fields: [lessonId], references: [id])
+
+  @@map("messages")
+}
+
+model ProgressEntry {
+  id             String   @id @default(cuid())
+  organizationId String
+  studentId      String
+  lessonId       String
+  skill          String
+  rating         Int
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  student      Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  lesson       Lesson       @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@map("progress_entries")
+}
+
+model WebhookEvent {
+  id             String   @id @default(cuid())
+  organizationId String
+  source         String
+  eventType      String
+  payload        Json
+  processed      Boolean  @default(false)
+  processedAt    DateTime?
+  errorMessage   String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("webhook_events")
+}
+
+model AuditLog {
+  id             String   @id @default(cuid())
+  organizationId String
+  userId         String
+  action         String
+  resourceType   String
+  resourceId     String
+  oldValues      Json?
+  newValues      Json?
+  ipAddress      String?
+  userAgent      String?
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("audit_logs")
+}
+
+model Policy {
+  id             String   @id @default(cuid())
+  organizationId String
+  key            String
+  value          Json
+  description    String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, key])
+  @@map("policies")
+}
+
+enum UserRole {
+  OWNER
+  ADMIN
+  DISPATCHER
+  MANAGER
+  INSTRUCTOR
+  STUDENT
+  PARENT
+}
+
+enum VehicleType {
+  SEDAN
+  COMPACT
+  SUV
+}
+
+enum PackageType {
+  DRIVING
+  CLASSROOM
+  ROAD_TEST
+  ADDON
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  CANCELLED
+  REFUNDED
+}
+
+enum InvoiceStatus {
+  PENDING
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum LessonType {
+  DRIVING
+  CLASSROOM
+  ROAD_TEST
+}
+
+enum LessonStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum MessageType {
+  ENROLLMENT_CONFIRMATION
+  REMINDER_24H
+  REMINDER_3H
+  RUNNING_LATE
+  NO_SHOW
+  COMPLETION
+  CANCELLATION
+  CUSTOM
+}
+
+enum MessageChannel {
+  SMS
+  EMAIL
+  PUSH
+}
+
+enum MessageStatus {
+  PENDING
+  SENT
+  DELIVERED
+  FAILED
+}
