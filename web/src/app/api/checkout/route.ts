@@ -12,51 +12,26 @@ export async function POST(req: NextRequest) {
       organizationId = 'default-org'
     } = body
 
-    const pkg = await db.package.findUnique({
-      where: { id: packageId }
-    })
+    const packages = [
+      { id: 'starter', name: 'Starter Drive', price: 140 },
+      { id: 'road-test', name: 'Road Test Prep', price: 260 },
+      { id: 'full-course', name: 'Full Course', price: 360 },
+    ]
+
+    const pkg = packages.find(p => p.id === packageId)
 
     if (!pkg) {
       return NextResponse.json({ error: 'Package not found' }, { status: 404 })
     }
 
-    const student = await db.student.create({
-      data: {
-        organizationId,
-        email: studentData.studentEmail,
-        firstName: studentData.studentFirstName,
-        lastName: studentData.studentLastName,
-        phone: studentData.studentPhone,
-        parentEmail: studentData.parentEmail,
-        parentPhone: studentData.parentPhone,
-        preferredTimes: studentData.preferredTimes ? JSON.parse(JSON.stringify({ times: studentData.preferredTimes })) : null,
-      }
-    })
-
-    if (studentData.pickupAddress) {
-      const pickupAddress = await db.address.create({
-        data: {
-          organizationId,
-          street: studentData.pickupAddress,
-          city: 'Atlanta',
-          state: 'GA',
-          zipCode: '30309',
-          country: 'US',
-        }
-      })
-
-      await db.student.update({
-        where: { id: student.id },
-        data: { pickupAddressId: pickupAddress.id }
-      })
-    }
+    console.log('Creating checkout session for:', { packageId, studentData })
 
     const session = await createCheckoutSession({
       packageId: pkg.id,
       packageName: pkg.name,
       packagePrice: pkg.price,
       addPickupDropoff,
-      studentData: { ...studentData, studentId: student.id },
+      studentData: { ...studentData, studentId: 'temp-student-id' },
       organizationId,
     })
 
