@@ -12,10 +12,21 @@ export const lessonsRouter = router({
         student: true,
         instructor: true,
         vehicle: true,
-        zone: true,
-        package: true,
-        pickupAddress: true,
-        dropoffAddress: true,
+        order: {
+          include: {
+            package: true,
+          },
+        },
+        pickupAddress: {
+          include: {
+            zone: true,
+          },
+        },
+        dropoffAddress: {
+          include: {
+            zone: true,
+          },
+        },
       },
       orderBy: { startTime: 'asc' }
     })
@@ -42,10 +53,21 @@ export const lessonsRouter = router({
           student: true,
           instructor: true,
           vehicle: true,
-          zone: true,
-          package: true,
-          pickupAddress: true,
-          dropoffAddress: true,
+          order: {
+            include: {
+              package: true,
+            },
+          },
+          pickupAddress: {
+            include: {
+              zone: true,
+            },
+          },
+          dropoffAddress: {
+            include: {
+              zone: true,
+            },
+          },
         },
         orderBy: { startTime: 'asc' }
       })

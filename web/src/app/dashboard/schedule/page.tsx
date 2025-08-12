@@ -212,11 +212,11 @@ export default function SchedulePage() {
                       <Badge variant="secondary" className="mb-1">
                         {'packageType' in lesson 
                           ? lesson.packageType 
-                          : lesson.package?.name || 'Unknown Package'
+                          : lesson.order?.package?.name || 'Unknown Package'
                         }
                       </Badge>
-                      <Badge className={getZoneColor('zone' in lesson ? lesson.zone : lesson.zone?.name || 'Unknown')}>
-                        {'zone' in lesson ? lesson.zone : lesson.zone?.name || 'Unknown'}
+                      <Badge className={getZoneColor('zone' in lesson ? lesson.zone : lesson.pickupAddress?.zone?.name || 'Unknown')}>
+                        {'zone' in lesson ? lesson.zone : lesson.pickupAddress?.zone?.name || 'Unknown'}
                       </Badge>
                     </div>
                   </div>
