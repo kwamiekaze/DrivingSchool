@@ -66,8 +66,31 @@ export default function EnrollPage() {
     return packagePrice + pickupFee
   }
 
-  const handleEnroll = () => {
-    console.log('Enrollment data:', { selectedPackage, addPickupDropoff, formData })
+  const handleEnroll = async () => {
+    try {
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          packageId: selectedPackage,
+          addPickupDropoff,
+          studentData: formData,
+          organizationId: 'default-org',
+        }),
+      })
+
+      const data = await response.json()
+      
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        console.error('Failed to create checkout session:', data.error)
+      }
+    } catch (error) {
+      console.error('Enrollment error:', error)
+    }
   }
 
   return (
