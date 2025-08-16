@@ -4,7 +4,7 @@ import React from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
-import { Calendar, Users, Car, MapPin, BarChart3, Settings } from 'lucide-react'
+import { Calendar, Users, Car, MapPin, BarChart3 } from 'lucide-react'
 
 export default function DashboardPage() {
   return (

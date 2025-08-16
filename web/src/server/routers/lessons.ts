@@ -1,6 +1,5 @@
 import { router, protectedProcedure } from '../trpc'
 import { z } from 'zod'
-import { LessonType, LessonStatus } from '@prisma/client'
 
 export const lessonsRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {

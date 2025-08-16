@@ -2,11 +2,11 @@
 
 import React, { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
-import { BarChart3, Download, Calendar, DollarSign, Users, Car, MapPin, TrendingUp, TrendingDown } from 'lucide-react'
+import { BarChart3, Download, Calendar, DollarSign, Users, Car, MapPin, TrendingUp } from 'lucide-react'
 
 export default function ReportsPage() {
   const [selectedPeriod, setSelectedPeriod] = useState('month')
