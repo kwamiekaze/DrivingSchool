@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
 import { Calendar, Clock, MapPin, User, Car, ChevronLeft, ChevronRight } from 'lucide-react'
-import { trpc } from '@/lib/trpc'
 
 const mockLessons = [
   {
@@ -57,9 +56,8 @@ export default function SchedulePage() {
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [selectedLesson, setSelectedLesson] = useState<string | null>(null)
   
-  const { data: lessons = mockLessons, isLoading } = trpc.lessons.getByDate.useQuery({
-    date: selectedDate.toISOString().split('T')[0],
-  })
+  const lessons = mockLessons
+  const isLoading = false
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('en-US', { 
@@ -200,23 +198,17 @@ export default function SchedulePage() {
                       <div className="flex items-center space-x-2 mt-1">
                         <User className="h-4 w-4 text-gray-500" />
                         <span className="text-sm text-gray-600">
-                          {'studentName' in lesson 
-                            ? lesson.studentName 
-                            : `${lesson.student?.firstName} ${lesson.student?.lastName}`
-                          }
+                          {lesson.studentName}
                         </span>
                       </div>
                     </div>
                     
                     <div className="flex flex-col">
                       <Badge variant="secondary" className="mb-1">
-                        {'packageType' in lesson 
-                          ? lesson.packageType 
-                          : lesson.order?.package?.name || 'Unknown Package'
-                        }
+                        {lesson.packageType}
                       </Badge>
-                      <Badge className={getZoneColor('zone' in lesson ? lesson.zone : lesson.pickupAddress?.zone?.name || 'Unknown')}>
-                        {'zone' in lesson ? lesson.zone : lesson.pickupAddress?.zone?.name || 'Unknown'}
+                      <Badge className={getZoneColor(lesson.zone)}>
+                        {lesson.zone}
                       </Badge>
                     </div>
                   </div>
@@ -226,21 +218,11 @@ export default function SchedulePage() {
                       <div className="flex items-center space-x-1 text-sm text-gray-600">
                         <Car className="h-4 w-4" />
                         <span>
-                          {'instructor' in lesson && typeof lesson.instructor === 'string'
-                            ? lesson.instructor 
-                            : lesson.instructor && typeof lesson.instructor === 'object'
-                              ? `${lesson.instructor.firstName} ${lesson.instructor.lastName}`
-                              : 'Unknown Instructor'
-                          }
+                          {lesson.instructor}
                         </span>
                       </div>
                       <div className="text-xs text-gray-500">
-                        {'vehicle' in lesson && typeof lesson.vehicle === 'string'
-                          ? lesson.vehicle 
-                          : lesson.vehicle && typeof lesson.vehicle === 'object'
-                            ? `${lesson.vehicle.make} ${lesson.vehicle.model} (${lesson.vehicle.licensePlate})`
-                            : 'Unknown Vehicle'
-                        }
+                        {lesson.vehicle}
                       </div>
                     </div>
                     
@@ -260,23 +242,13 @@ export default function SchedulePage() {
                       <div>
                         <p className="text-sm font-semibold text-gray-700">Pickup Address</p>
                         <p className="text-sm text-gray-600">
-                          {'pickupAddress' in lesson && typeof lesson.pickupAddress === 'string'
-                            ? lesson.pickupAddress 
-                            : lesson.pickupAddress && typeof lesson.pickupAddress === 'object'
-                              ? `${lesson.pickupAddress.street}, ${lesson.pickupAddress.city}, ${lesson.pickupAddress.state}`
-                              : 'No pickup address'
-                          }
+                          {lesson.pickupAddress}
                         </p>
                       </div>
                       <div>
                         <p className="text-sm font-semibold text-gray-700">Dropoff Address</p>
                         <p className="text-sm text-gray-600">
-                          {'dropoffAddress' in lesson && typeof lesson.dropoffAddress === 'string'
-                            ? lesson.dropoffAddress 
-                            : lesson.dropoffAddress && typeof lesson.dropoffAddress === 'object'
-                              ? `${lesson.dropoffAddress.street}, ${lesson.dropoffAddress.city}, ${lesson.dropoffAddress.state}`
-                              : 'No dropoff address'
-                          }
+                          {lesson.dropoffAddress}
                         </p>
                       </div>
                     </div>
