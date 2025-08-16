@@ -22,7 +22,7 @@ export default function AdminPage() {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <div className="text-2xl font-bold text-[#0E7C86]">
-              All N 1 Driving School
+              Driving School
             </div>
             <span className="text-sm text-gray-500">Admin</span>
           </div>

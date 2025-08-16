@@ -11,8 +11,8 @@ export const messageTemplates: MessageTemplate[] = [
   {
     id: 'enrollment-confirmation',
     name: 'Enrollment Confirmation',
-    subject: 'Welcome to All N 1 Driving School!',
-    body: 'Hi {firstName}, welcome to All N 1 Driving School! Your {packageName} is confirmed. You\'ll get a reminder 24 hours before each lesson. View or reschedule anytime: {portalLink} — Thanks!',
+    subject: 'Welcome to Driving School!',
+    body: 'Hi {firstName}, welcome to Driving School! Your {packageName} is confirmed. You\'ll get a reminder 24 hours before each lesson. View or reschedule anytime: {portalLink} — Thanks!',
     type: 'email',
     variables: ['firstName', 'packageName', 'portalLink'],
   },
@@ -26,14 +26,14 @@ export const messageTemplates: MessageTemplate[] = [
   {
     id: 'running-late',
     name: 'Running Late Cascade',
-    body: 'Hey {firstName}, this is your instructor from All N 1 Driving School. Due to traffic from the previous session, your new ETA is {etaTime}. Sorry for the inconvenience—please reply to confirm you got this.',
+    body: 'Hey {firstName}, this is your instructor from Driving School. Due to traffic from the previous session, your new ETA is {etaTime}. Sorry for the inconvenience—please reply to confirm you got this.',
     type: 'sms',
     variables: ['firstName', 'etaTime'],
   },
   {
     id: 'no-show',
     name: 'No Show',
-    subject: 'Missed Lesson - All N 1 Driving School',
+    subject: 'Missed Lesson - Driving School',
     body: 'Hi {firstName}, we waited at {pickupAddress}. Marked as no-show at {time}. Per policy, a fee may apply. Need help rebooking? {portalLink}',
     type: 'email',
     variables: ['firstName', 'pickupAddress', 'time', 'portalLink'],

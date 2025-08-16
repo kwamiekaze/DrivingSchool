@@ -1,13 +1,13 @@
 'use client'
 
-import React from 'react'
+import React, { Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
 import { CheckCircle } from 'lucide-react'
 
-export default function EnrollmentSuccessPage() {
+function EnrollmentSuccessContent() {
   const searchParams = useSearchParams()
   const sessionId = searchParams.get('session_id')
 
@@ -17,7 +17,7 @@ export default function EnrollmentSuccessPage() {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <div className="text-2xl font-bold text-[#0E7C86]">
-              All N 1 Driving School
+              Driving School
             </div>
           </div>
           <div className="flex items-center space-x-4">
@@ -39,7 +39,7 @@ export default function EnrollmentSuccessPage() {
           </h1>
           
           <p className="text-xl text-gray-600 mb-8">
-            Welcome to All N 1 Driving School! Your payment has been processed and your enrollment is confirmed.
+            Welcome to Driving School! Your payment has been processed and your enrollment is confirmed.
           </p>
 
           <Card className="mb-8">
@@ -102,5 +102,13 @@ export default function EnrollmentSuccessPage() {
         </div>
       </main>
     </div>
+  )
+}
+
+export default function EnrollmentSuccessPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <EnrollmentSuccessContent />
+    </Suspense>
   )
 }

@@ -6,7 +6,7 @@ import { Providers } from "./providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "All N 1 Driving School",
+  title: "Driving School",
   description: "Professional driving instruction in the Atlanta metro area",
 };
 

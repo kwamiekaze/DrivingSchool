@@ -63,7 +63,7 @@ export default function ReportsPage() {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Link href="/admin" className="text-2xl font-bold text-[#0E7C86]">
-              All N 1 Driving School
+              Driving School
             </Link>
             <span className="text-sm text-gray-500">Reports</span>
           </div>

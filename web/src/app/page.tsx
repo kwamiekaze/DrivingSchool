@@ -9,7 +9,7 @@ export default function HomePage() {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <div className="text-2xl font-bold text-[#0E7C86]">
-              All N 1 Driving School
+              Driving School
             </div>
           </div>
           <div className="flex items-center space-x-4">
@@ -98,7 +98,7 @@ export default function HomePage() {
 
       <footer className="border-t bg-gray-50 py-8">
         <div className="container mx-auto px-4 text-center text-gray-600">
-          <p>&copy; 2024 All N 1 Driving School. All rights reserved.</p>
+          <p>&copy; 2024 Driving School. All rights reserved.</p>
         </div>
       </footer>
     </div>
